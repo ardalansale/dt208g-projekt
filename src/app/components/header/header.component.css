@@ -1,0 +1,11 @@
+.nav-links a {
+    text-decoration: none;
+    color: inherit;
+    padding: 0.25rem 0.5rem;
+    transition: opacity 0.2s;
+}
+
+.nav-links a.active {
+    font-weight: 700;
+    border-bottom: 2px solid var(--color-accent, #007ACC);
+}
