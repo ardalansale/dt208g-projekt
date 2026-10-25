@@ -1,53 +1,44 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Course } from '../models/course';
 
 @Injectable({
     providedIn: 'root'
-})
-export class ScheduleService {
-    private storageKey = 'my_schedule';
-
-    private scheduleSubject = new BehaviorSubject<Course[]>(this.getStoredSchedule());
-    schedule$ = this.scheduleSubject.asObservable();
+    })
+    export class ScheduleService {
+    private storageKey = 'miun_schedule';
+    private scheduleSubject = new BehaviorSubject<Course[]>(this.loadFromStorage());
+    
+    schedule$: Observable<Course[]> = this.scheduleSubject.asObservable();
 
     constructor() {}
 
-    private getStoredSchedule(): Course[] {
+    private loadFromStorage(): Course[] {
         const data = localStorage.getItem(this.storageKey);
         return data ? JSON.parse(data) : [];
     }
 
-    getSchedule(): Course[] {
-        return this.scheduleSubject.value;
+    private saveToStorage(schedule: Course[]): void {
+        localStorage.setItem(this.storageKey, JSON.stringify(schedule));
+        this.scheduleSubject.next(schedule);
     }
 
-    addCourse(course: Course): boolean {
-        const current = this.getSchedule();
-        const exists = current.some(c => c.courseCode === course.courseCode);
-
-        if (exists) {
-        alert('Kursen finns redan i ditt ramschema!');
-        return false;
+    addCourse(course: Course): void {
+        const currentSchedule = this.scheduleSubject.value;
+        // Kontrollera att kursen inte redan finns
+        if (!currentSchedule.some(c => c.courseCode === course.courseCode)) {
+        const updated = [...currentSchedule, course];
+        this.saveToStorage(updated);
         }
-
-        const updated = [...current, course];
-        this.saveSchedule(updated);
-        return true;
     }
 
     removeCourse(courseCode: string): void {
-        const current = this.getSchedule();
-        const updated = current.filter(c => c.courseCode !== courseCode);
-        this.saveSchedule(updated);
-    }
-
-    private saveSchedule(courses: Course[]): void {
-        localStorage.setItem(this.storageKey, JSON.stringify(courses));
-        this.scheduleSubject.next(courses);
+        const currentSchedule = this.scheduleSubject.value;
+        const updated = currentSchedule.filter(c => c.courseCode !== courseCode);
+        this.saveToStorage(updated);
     }
 
     getTotalPoints(): number {
-        return this.getSchedule().reduce((sum, c) => sum + c.points, 0);
-    }
+        return this.scheduleSubject.value.reduce((sum, course) => sum + course.points, 0);
+  }
 }

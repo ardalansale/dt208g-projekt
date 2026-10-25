@@ -15,6 +15,8 @@ import { ScheduleService } from '../../services/schedule.service';
 export class CourseListComponent implements OnInit {
   courses: Course[] = [];
   filteredCourses: Course[] = [];
+  schedule: Course[] = [];
+  
   searchTerm: string = '';
   selectedSubject: string = '';
   subjects: string[] = [];
@@ -26,10 +28,16 @@ export class CourseListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Hämta alla kurser
     this.courseService.getCourses().subscribe(data => {
       this.courses = data;
       this.filteredCourses = data;
       this.subjects = [...new Set(data.map(c => c.subject))];
+    });
+
+    // Lyssna på ramschemat för att veta vilka kurser som är tillagda
+    this.scheduleService.schedule$.subscribe(scheduleData => {
+      this.schedule = scheduleData;
     });
   }
 
@@ -55,7 +63,17 @@ export class CourseListComponent implements OnInit {
     }
   }
 
-  addCourse(course: Course): void {
-    this.scheduleService.addCourse(course);
+  // Kontrollerar om en kurs redan finns i schemat - ta bort direkt i Sök
+  isCourseInSchedule(courseCode: string): boolean {
+    return this.schedule.some(c => c.courseCode === courseCode);
+  }
+
+  // Växla mellan att lägga till och ta bort direkt från listan - ta bort direkt i Sök
+  toggleCourse(course: Course): void {
+    if (this.isCourseInSchedule(course.courseCode)) {
+      this.scheduleService.removeCourse(course.courseCode);
+    } else {
+      this.scheduleService.addCourse(course);
+    }
   }
 }

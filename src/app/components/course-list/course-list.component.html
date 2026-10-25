@@ -1,5 +1,5 @@
 <div class="course-list-container">
-    <h2>Mittuniversitet - Kursutbud</h2>
+    <h2>Kursutbud</h2>
 
     <div class="filters">
         <input 
@@ -39,7 +39,12 @@
             <td>{{ course.points }} hp</td>
             <td>{{ course.subject }}</td>
             <td>
-            <button (click)="addCourse(course)" class="btn">Lägg till</button>
+            <button 
+                (click)="toggleCourse(course)" 
+                [class.btn-secondary]="isCourseInSchedule(course.courseCode)" 
+                class="btn">
+                {{ isCourseInSchedule(course.courseCode) ? 'Ta bort' : 'Lägg till' }}
+            </button>
             </td>
         </tr>
         <tr *ngIf="filteredCourses.length === 0">
