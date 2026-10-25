@@ -7,5 +7,5 @@ export const routes: Routes = [
     { path: '', component: HomeComponent },
     { path: 'kurser', component: CourseListComponent },
     { path: 'ramschema', component: ScheduleComponent },
-    { path: '**', redirectTo: '' } // Om man skriver fel länk hamnar man på hem
+    { path: '**', redirectTo: '' } // 404
 ];

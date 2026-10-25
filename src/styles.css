@@ -197,6 +197,18 @@ a:hover {
     background-color: #F8FAFC;
 }
 
+/* Footer */
+
+.site-footer {
+    background-color: var(--color-primary);
+    color: #FFFFFF;
+    text-align: center;
+    padding: 1.5rem 0;
+    margin-top: 3rem;
+    font-size: 0.9rem;
+    width: 100%;
+}
+
 /* Accessibility & Focus */
 :focus-visible {
     outline: 2px solid var(--color-primary);
