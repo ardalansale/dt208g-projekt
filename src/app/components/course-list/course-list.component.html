@@ -1,0 +1,50 @@
+<div class="course-list-container">
+    <h2>Mittuniversitet - Kursutbud</h2>
+
+    <div class="filters">
+        <input 
+        type="text" 
+        placeholder="Sök på kursnamn eller kod..." 
+        [(ngModel)]="searchTerm" 
+        (input)="filterCourses()" 
+        class="search-input">
+
+        <select [(ngModel)]="selectedSubject" (change)="filterCourses()" class="filter-select">
+        <option value="">Alla ämnen</option>
+        <option *ngFor="let subject of subjects" [value]="subject">{{ subject }}</option>
+        </select>
+
+        <select [(ngModel)]="sortField" (change)="sortCourses()" class="filter-select">
+        <option value="">Sortera efter...</option>
+        <option value="code">Kurskod</option>
+        <option value="name">Kursnamn</option>
+        <option value="points">Poäng (högst först)</option>
+        </select>
+    </div>
+
+    <table class="course-table">
+        <thead>
+        <tr>
+            <th>Kod</th>
+            <th>Kursnamn</th>
+            <th>Poäng</th>
+            <th>Ämne</th>
+            <th>Handling</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let course of filteredCourses">
+            <td>{{ course.courseCode }}</td>
+            <td>{{ course.courseName }}</td>
+            <td>{{ course.points }} hp</td>
+            <td>{{ course.subject }}</td>
+            <td>
+            <button (click)="addCourse(course)" class="btn">Lägg till</button>
+            </td>
+        </tr>
+        <tr *ngIf="filteredCourses.length === 0">
+            <td colspan="5" style="text-align: center;">Inga kurser hittades.</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
