@@ -40,5 +40,5 @@ import { Course } from '../models/course';
 
     getTotalPoints(): number {
         return this.scheduleSubject.value.reduce((sum, course) => sum + course.points, 0);
-  }
+    }
 }
