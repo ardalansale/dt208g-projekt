@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Schedule } from './schedule';
+import { Schedule } from './schedule.service';
 
 describe('Schedule', () => {
   let service: Schedule;
