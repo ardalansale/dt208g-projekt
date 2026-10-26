@@ -22,53 +22,90 @@ export class CourseListComponent implements OnInit {
   subjects: string[] = [];
   sortField: string = '';
 
+  // Paginering-variabler
+  currentPage: number = 1;
+  itemsPerPage: number = 10; // Visar 10 kurser per sida
+
   constructor(
     private courseService: CourseService,
     private scheduleService: ScheduleService
   ) {}
 
   ngOnInit(): void {
-    // Hämta alla kurser
     this.courseService.getCourses().subscribe(data => {
       this.courses = data;
       this.filteredCourses = data;
       this.subjects = [...new Set(data.map(c => c.subject))];
     });
 
-    // Lyssna på ramschemat för att veta vilka kurser som är tillagda
     this.scheduleService.schedule$.subscribe(scheduleData => {
       this.schedule = scheduleData;
     });
   }
 
-  filterCourses(): void {
-    this.filteredCourses = this.courses.filter(course => {
-      const matchesSearch = course.courseName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                            course.courseCode.toLowerCase().includes(this.searchTerm.toLowerCase());
-      const matchesSubject = this.selectedSubject ? course.subject === this.selectedSubject : true;
-      return matchesSearch && matchesSubject;
-    });
-    if (this.sortField) {
-      this.sortCourses();
+  // Hämta endast de kurser som ska visas på aktuell sida
+  get paginatedCourses(): Course[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return this.filteredCourses.slice(startIndex, startIndex + this.itemsPerPage);
+  }
+
+  // Beräkna totala antalet sidor
+  get totalPages(): number {
+    return Math.ceil(this.filteredCourses.length / this.itemsPerPage) || 1;
+  }
+
+  // Bläddra framåt
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
     }
+  }
+
+  // Bläddra bakåt
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  filterCourses(): void {
+    let result = this.courses;
+
+    if (this.searchTerm && this.searchTerm.trim() !== '') {
+      const term = this.searchTerm.toLowerCase().trim();
+      result = result.filter(course => 
+        course.courseName.toLowerCase().includes(term) ||
+        course.courseCode.toLowerCase().includes(term)
+      );
+    }
+
+    if (this.selectedSubject) {
+      result = result.filter(course => course.subject === this.selectedSubject);
+    }
+
+    if (this.sortField) {
+      result = [...result];
+      if (this.sortField === 'code') {
+        result.sort((a, b) => a.courseCode.localeCompare(b.courseCode));
+      } else if (this.sortField === 'name') {
+        result.sort((a, b) => a.courseName.localeCompare(b.courseName)); // Fixat till courseName här!
+      } else if (this.sortField === 'points') {
+        result.sort((a, b) => b.points - a.points);
+      }
+    }
+
+    this.filteredCourses = result;
+    this.currentPage = 1; // Återställ alltid till sida 1 vid ny sökning/filtrering
   }
 
   sortCourses(): void {
-    if (this.sortField === 'code') {
-      this.filteredCourses.sort((a, b) => a.courseCode.localeCompare(b.courseCode));
-    } else if (this.sortField === 'name') {
-      this.filteredCourses.sort((a, b) => a.courseName.localeCompare(b.courseName));
-    } else if (this.sortField === 'points') {
-      this.filteredCourses.sort((a, b) => b.points - a.points);
-    }
+    this.filterCourses();
   }
 
-  // Kontrollerar om en kurs redan finns i schemat - ta bort direkt i Sök
   isCourseInSchedule(courseCode: string): boolean {
     return this.schedule.some(c => c.courseCode === courseCode);
   }
 
-  // Växla mellan att lägga till och ta bort direkt från listan - ta bort direkt i Sök
   toggleCourse(course: Course): void {
     if (this.isCourseInSchedule(course.courseCode)) {
       this.scheduleService.removeCourse(course.courseCode);

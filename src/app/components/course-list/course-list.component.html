@@ -3,53 +3,74 @@
 
     <div class="filters">
         <input 
-        type="text" 
-        placeholder="Sök på kursnamn eller kod..." 
-        [(ngModel)]="searchTerm" 
-        (input)="filterCourses()" 
-        class="search-input">
+            type="text" 
+            placeholder="Sök på kursnamn eller kod..." 
+            [(ngModel)]="searchTerm" 
+            (input)="filterCourses()" 
+            class="search-input"
+            aria-label="Sök på kursnamn eller kod">
 
-        <select [(ngModel)]="selectedSubject" (change)="filterCourses()" class="filter-select">
-        <option value="">Alla ämnen</option>
-        <option *ngFor="let subject of subjects" [value]="subject">{{ subject }}</option>
+        <select [(ngModel)]="selectedSubject" (change)="filterCourses()" class="filter-select" aria-label="Filtrera på ämne">
+            <option value="">Alla ämnen</option>
+            <option *ngFor="let subject of subjects" [value]="subject">{{ subject }}</option>
         </select>
 
-        <select [(ngModel)]="sortField" (change)="sortCourses()" class="filter-select">
-        <option value="">Sortera efter...</option>
-        <option value="code">Kurskod</option>
-        <option value="name">Kursnamn</option>
-        <option value="points">Poäng (högst först)</option>
+        <select [(ngModel)]="sortField" (change)="sortCourses()" class="filter-select" aria-label="Sortera kurser">
+            <option value="">Sortera efter...</option>
+            <option value="code">Kurskod</option>
+            <option value="name">Kursnamn</option>
+            <option value="points">Poäng (högst först)</option>
         </select>
     </div>
 
-    <table class="course-table">
-        <thead>
-        <tr>
-            <th>Kod</th>
-            <th>Kursnamn</th>
-            <th>Poäng</th>
-            <th>Ämne</th>
-            <th>Handling</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let course of filteredCourses">
-            <td>{{ course.courseCode }}</td>
-            <td>{{ course.courseName }}</td>
-            <td>{{ course.points }} hp</td>
-            <td>{{ course.subject }}</td>
-            <td>
-            <button 
-                (click)="toggleCourse(course)" 
-                [class.btn-secondary]="isCourseInSchedule(course.courseCode)" 
-                class="btn">
-                {{ isCourseInSchedule(course.courseCode) ? 'Ta bort' : 'Lägg till' }}
-            </button>
-            </td>
-        </tr>
-        <tr *ngIf="filteredCourses.length === 0">
-            <td colspan="5" style="text-align: center;">Inga kurser hittades.</td>
-        </tr>
-        </tbody>
-    </table>
+    <!-- Visar antal träffar och aktuell sida -->
+    <p class="search-count" *ngIf="filteredCourses.length > 0">
+        Visar <strong>{{ filteredCourses.length }}</strong> kurser totalt (Sida {{ currentPage }} av {{ totalPages }})
+    </p>
+
+    <div class="table-scroll-container">
+        <table class="course-table">
+            <thead>
+                <tr>
+                    <th scope="col">Kod</th>
+                    <th scope="col">Kursnamn</th>
+                    <th scope="col">Poäng</th>
+                    <th scope="col">Ämne</th>
+                    <th scope="col">Handling</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Observera att vi loopen körs på paginatedCourses -->
+                <tr *ngFor="let course of paginatedCourses">
+                    <td data-label="Kod">{{ course.courseCode }}</td>
+                    <td data-label="Kursnamn">{{ course.courseName }}</td>
+                    <td data-label="Poäng">{{ course.points }} hp</td>
+                    <td data-label="Ämne">{{ course.subject }}</td>
+                    <td data-label="Handling">
+                        <button 
+                            (click)="toggleCourse(course)" 
+                            [class.btn-secondary]="isCourseInSchedule(course.courseCode)" 
+                            class="btn"
+                            [attr.aria-label]="(isCourseInSchedule(course.courseCode) ? 'Ta bort ' : 'Lägg till ') + course.courseName">
+                            {{ isCourseInSchedule(course.courseCode) ? 'Ta bort' : 'Lägg till' }}
+                        </button>
+                    </td>
+                </tr>
+                <tr *ngIf="filteredCourses.length === 0">
+                    <td colspan="5" class="empty-message">Inga kurser hittades.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paginering-kontroller (Föregående / Nästa) -->
+    <div class="pagination-controls" *ngIf="totalPages > 1">
+        <button class="btn btn-secondary" (click)="prevPage()" [disabled]="currentPage === 1">
+            Föregående
+        </button>
+        <span class="pagination-info">Sida <strong>{{ currentPage }}</strong> av <strong>{{ totalPages }}</strong></span>
+        <button class="btn btn-secondary" (click)="nextPage()" [disabled]="currentPage === totalPages">
+            Nästa
+        </button>
+    </div>
 </div>

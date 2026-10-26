@@ -1,30 +1,37 @@
 <div class="schedule-container">
     <h2>Mitt Ramschema</h2>
-    <p>Totala högskolepoäng: <strong>{{ totalPoints }} hp</strong></p>
+    <p class="total-points">Totala högskolepoäng: <strong>{{ totalPoints }} hp</strong></p>
 
-    <table class="course-table">
-        <thead>
-        <tr>
-            <th>Kod</th>
-            <th>Kursnamn</th>
-            <th>Poäng</th>
-            <th>Ämne</th>
-            <th>Handling</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let course of schedule">
-            <td>{{ course.courseCode }}</td>
-            <td>{{ course.courseName }}</td>
-            <td>{{ course.points }} hp</td>
-            <td>{{ course.subject }}</td>
-            <td>
-            <button (click)="removeCourse(course.courseCode)" class="btn btn-secondary">Ta bort</button>
-            </td>
-        </tr>
-        <tr *ngIf="schedule.length === 0">
-            <td colspan="5" style="text-align: center;">Ditt ramschema är tomt. Inga kurser tillagda än.</td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="table-scroll-container">
+        <table class="course-table">
+            <thead>
+                <tr>
+                    <th scope="col">Kod</th>
+                    <th scope="col">Kursnamn</th>
+                    <th scope="col">Poäng</th>
+                    <th scope="col">Ämne</th>
+                    <th scope="col">Handling</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let course of schedule">
+                    <td data-label="Kod">{{ course.courseCode }}</td>
+                    <td data-label="Kursnamn">{{ course.courseName }}</td>
+                    <td data-label="Poäng">{{ course.points }} hp</td>
+                    <td data-label="Ämne">{{ course.subject }}</td>
+                    <td data-label="Handling">
+                        <button 
+                            (click)="removeCourse(course.courseCode)" 
+                            class="btn btn-danger"
+                            [attr.aria-label]="'Ta bort ' + course.courseName + ' från ramschemat'">
+                            Ta bort
+                        </button>
+                    </td>
+                </tr>
+                <tr *ngIf="schedule.length === 0">
+                    <td colspan="5" class="empty-message">Ditt ramschema är tomt. Inga kurser tillagda än.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
