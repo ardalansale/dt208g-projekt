@@ -3,10 +3,10 @@
 En studentfokuserad webbapplikation utvecklad med Angular och TypeScript för Mittuniversitetet som en del av projektuppgiften. Applikationen låter studenter söka, filtrera och sortera bland tillgängliga kurser samt bygga ihop ett eget, personligt ramschema där totala högskolepoäng räknas samman och sparas via `localStorage`.
 
 ## GitHub-repo
-[Ange länk till ditt publika GitHub-repository här]
+https://github.com/ardalansale/dt208g-projekt
 
 ## Publicerad webbplats
-[Ange länk till din publicerade webbplats här, t.ex. Netlify eller GitHub Pages]
+https://dt208g-projekt.netlify.app/
 
 ## Funktionalitet
 - **Startsida:** Presenterar en översikt över lärosätet samt dynamisk statistik över tillgängliga kurser.
@@ -33,4 +33,4 @@ En studentfokuserad webbapplikation utvecklad med Angular och TypeScript för Mi
 ## Användning och installation
 1. Klona repositoryt lokalt:
    ```bash
-   git clone <URL-till-ditt-repo>
+   git clone https://github.com/ardalansale/dt208g-projekt
